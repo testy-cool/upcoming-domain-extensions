@@ -10,7 +10,7 @@ import {
 } from "@/components/reui/timeline"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ExternalLink, Sources, type Source } from "@/components/sources"
-import { formatDate, useDirectory } from "@/data"
+import { LAST_REVEAL, formatDate, lastRoundPace, monthsAfterThisReveal, useDirectory } from "@/data"
 import { ROUND_ANNOUNCEMENT, timeline } from "@/timeline"
 
 const JOURNEY = "https://newgtldprogram.icann.org/en/application-rounds/round2/applicant-journey"
@@ -56,7 +56,9 @@ function when(d: string, end?: string) {
 }
 
 export function ApplyPage() {
-  const today = useDirectory().data.collected_at.slice(0, 10)
+  const { data } = useDirectory()
+  const today = data.collected_at.slice(0, 10)
+  const pace = lastRoundPace(data)
   return (
     <div className="space-y-6">
       <div className="max-w-3xl space-y-2">
@@ -88,6 +90,35 @@ export function ApplyPage() {
           </Timeline>
           <p className="text-muted-foreground">
             The window to apply is closed. ICANN has not announced the next one.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card id="when" className="scroll-mt-6">
+        <CardHeader>
+          <CardTitle>When the new endings could go live</CardTitle>
+        </CardHeader>
+        <CardContent className="max-w-3xl space-y-3">
+          <p>
+            ICANN has not given go-live dates. The last round is the best guide
+            there is. Its applications were made public on {formatDate(LAST_REVEAL)},
+            and {pace.count.toLocaleString("en-US")} of its endings went live.
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>The first went live {pace.first} months later.</li>
+            <li>Half were live within {pace.half} months.</li>
+            <li>Nine in ten were live within {pace.most} months.</li>
+          </ul>
+          <p>
+            At the same pace, the first 2026 endings would go live around{" "}
+            {monthsAfterThisReveal(pace.first)}, and half of them by around{" "}
+            {monthsAfterThisReveal(pace.half)}. This is the last round's pace,
+            not a promise from ICANN. Endings that several organisations want
+            usually take longer, because they have to be settled first.
+          </p>
+          <p className="text-muted-foreground">
+            Worked out from the go-live date of every generic ending in IANA's
+            root zone database that went live from October 2013 on.
           </p>
         </CardContent>
       </Card>

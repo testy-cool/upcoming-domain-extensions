@@ -98,3 +98,32 @@ export function formatUpdated(iso: string) {
 export function countryName(a: Application) {
   return a.country_name ?? a.country
 }
+
+// The 2012 round, measured from IANA's own dates: its applications were made
+// public on 13 June 2012, and every generic ending that went live from October
+// 2013 on came from it. ICANN gives no go-live dates for 2026, so this is the
+// only measured guide there is.
+export const LAST_REVEAL = "2012-06-13"
+export const THIS_REVEAL = "2026-10-07"
+
+function monthsBetween(a: string, b: string) {
+  const [y1, m1, d1] = a.split("-").map(Number)
+  const [y2, m2, d2] = b.split("-").map(Number)
+  return (y2 - y1) * 12 + (m2 - m1) + (d2 - d1) / 30
+}
+
+export function lastRoundPace(data: Directory) {
+  const months = data.tlds
+    .filter((t) => t.delegated && t.delegated >= "2013-10-01" && ["generic", "sponsored", "generic-restricted"].includes(t.type))
+    .map((t) => monthsBetween(LAST_REVEAL, t.delegated!))
+    .sort((a, b) => a - b)
+  const at = (share: number) => Math.round(months[Math.floor((months.length - 1) * share)])
+  return { count: months.length, first: at(0), half: at(0.5), most: at(0.9) }
+}
+
+// The month that falls a number of months after the 2026 reveal, as "Feb 2028".
+export function monthsAfterThisReveal(n: number) {
+  const [y, m] = THIS_REVEAL.split("-").map(Number)
+  const total = y * 12 + (m - 1) + n
+  return `${MONTHS[total % 12]} ${Math.floor(total / 12)}`
+}
