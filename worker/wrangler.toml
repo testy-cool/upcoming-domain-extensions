@@ -1,0 +1,9 @@
+name = "upcoming-domain-extensions"
+main = "index.js"
+compatibility_date = "2026-10-01"
+account_id = "60aae2b0f601454b2f1a949e01882630"
+workers_dev = false
+
+routes = [
+  { pattern = "testy.cool/upcoming-domain-extensions*", zone_id = "b79d06754e2844f06accafe0c101e42b" },
+]
