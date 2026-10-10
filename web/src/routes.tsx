@@ -34,7 +34,7 @@ function Layout() {
     document.title = pageMeta(pathname, data).title
   }, [pathname, data])
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 py-6">
+    <div className="w-full px-6 py-6 lg:px-10">
       <header className="site-header mb-8 flex flex-wrap items-center justify-between gap-3">
         <nav className="-ml-3 flex flex-wrap gap-1">
           <Nav to="/">Directory</Nav>
