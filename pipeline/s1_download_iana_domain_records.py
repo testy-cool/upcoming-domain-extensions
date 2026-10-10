@@ -35,7 +35,8 @@ def parse_root_list(page: str) -> list[dict]:
         cells = re.findall(r"<td>(.*?)</td>", row, re.S)
         rows.append({
             "slug": link.group(1),
-            "display": link.group(2).lstrip("."),
+            # IANA wraps right-to-left names in encoded direction marks, &#x200f;.موقع&#x200e;
+            "display": html.unescape(link.group(2)).strip("\u200e\u200f").lstrip("."),
             "type": text(cells[1]),
             "manager": text(cells[2]),
         })
