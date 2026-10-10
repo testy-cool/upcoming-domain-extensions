@@ -36,7 +36,7 @@ function Updated() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="mx-auto w-full max-w-5xl px-6 py-6">
         <header className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <nav className="flex gap-1">
@@ -49,9 +49,9 @@ export default function App() {
         <main>
           <Routes>
             <Route path="/" element={<Directory />} />
-            <Route path="/tld/:name" element={<TldPage />} />
-            <Route path="/how-it-works" element={<ApplyPage />} />
+                        <Route path="/how-it-works" element={<ApplyPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/:name" element={<TldPage />} />
           </Routes>
         </main>
       </div>

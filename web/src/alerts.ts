@@ -1,22 +1,10 @@
-import { useCallback, useEffect, useState } from "react"
+// Must match ALL_TOPIC and topic_for() in pipeline/s4_send_alerts_to_ntfy.py.
+export const ALL_TOPIC = "testycool-domain-extensions"
 
-export interface Alerts {
-  topic: string
-  watching: string[]
+export function topicFor(tld: string) {
+  return `testycool-ext-${tld}`
 }
 
-export function useAlerts() {
-  const [alerts, setAlerts] = useState<Alerts | null>(null)
-  useEffect(() => {
-    fetch("/api/alerts").then((r) => r.json()).then(setAlerts)
-  }, [])
-  const setWatch = useCallback(async (tld: string, on: boolean) => {
-    const r = await fetch("/api/watch", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ tld, on }),
-    })
-    setAlerts(await r.json())
-  }, [])
-  return { alerts, setWatch }
+export function ntfyUrl(topic: string) {
+  return `https://ntfy.sh/${topic}`
 }

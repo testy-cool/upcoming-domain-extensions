@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Run the four daily steps here, against ./data. Only for checking the code; the real runs start in Windmill.
+# Run the daily pipeline here and build the site into web/dist, the same steps the GitHub Action runs.
+# Alerts are skipped unless --alerts is given, because they post to the public ntfy topics.
 set -euo pipefail
 cd "$(dirname "$0")"
-mkdir -p data
-for s in windmill/f/upcoming_tlds/daily_update_steps/s*.py; do
-  [[ "$s" == *s4_* && "${1:-}" != "--alerts" ]] && { echo "skipping $s (pass --alerts to send)"; continue; }
-  echo "== $s"
-  uv run python -c "import runpy; runpy.run_path('$s')['main'](data_dir='data')"
-done
+for s in pipeline/s1_*.py pipeline/s2_*.py pipeline/s3_*.py; do echo "== $s"; uv run python "$s"; done
+if [ "${1:-}" = "--alerts" ]; then uv run python pipeline/s4_send_alerts_to_ntfy.py; fi
+(cd web && pnpm build)
+uv run python prerender.py

@@ -190,10 +190,11 @@ export function Directory() {
   return (
     <div className="space-y-5">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold">Top-level domains</h1>
+        <h1 className="text-2xl font-semibold">Upcoming domain extensions</h1>
         <p className="text-muted-foreground">
-          Every ending a web address can have: the ones in use, the 2026
-          applications, and the ones that were shut down.
+          Every ending a web address can have, like .com or .ai. The ones
+          companies applied for in 2026, the ones in use, and the ones that
+          were shut down. Updated every day from ICANN and IANA.
         </p>
       </div>
 
@@ -221,7 +222,7 @@ export function Directory() {
       <DataGrid
         table={table}
         recordCount={rows.length}
-        onRowClick={(row) => navigate(`/tld/${row.tld}`)}
+        onRowClick={(row) => navigate(`/${row.tld}`)}
         emptyMessage="Nothing matches that search."
         tableLayout={{ headerSticky: true }}
       >

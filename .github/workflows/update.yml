@@ -1,0 +1,86 @@
+# Every morning: download IANA's and ICANN's data, commit it, send alerts, rebuild the site and publish it.
+name: Update
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Keep IANA's record pages between runs
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: iana-raw-${{ github.run_id }}
+          restore-keys: iana-raw-
+
+      - name: Download IANA's domain records
+        if: github.event_name != 'push'
+        run: uv run python pipeline/s1_download_iana_domain_records.py
+
+      - name: Download ICANN's 2026 applications
+        if: github.event_name != 'push'
+        run: uv run python pipeline/s2_download_icann_2026_applications.py
+
+      - name: Build the directory file
+        if: github.event_name != 'push'
+        run: uv run python pipeline/s3_build_the_directory_file.py
+
+      - name: Commit the new data
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/tlds.json data/iana-list.json
+          git diff --cached --quiet || git commit -m "Update domain extension data $(date -u +%F)"
+          git push
+
+      - name: Send alerts
+        if: github.event_name != 'push'
+        run: uv run python pipeline/s4_send_alerts_to_ntfy.py
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Build the site
+        run: |
+          cd web
+          pnpm install --frozen-lockfile
+          pnpm build
+          cd ..
+          uv run python prerender.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

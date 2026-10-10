@@ -1,4 +1,7 @@
-data/
+data/*
+!data/tlds.json
+!data/iana-list.json
 .venv/
 web/node_modules/
 web/dist/
+__pycache__/

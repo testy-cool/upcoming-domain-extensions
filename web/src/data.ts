@@ -49,7 +49,7 @@ export function useDirectory() {
   const [data, setData] = useState<Directory | null>(null)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    cache ??= fetch("/data/tlds.json").then((r) => {
+    cache ??= fetch(`${import.meta.env.BASE_URL}data/tlds.json`).then((r) => {
       if (!r.ok) throw new Error(`Could not load the list (${r.status})`)
       return r.json()
     })

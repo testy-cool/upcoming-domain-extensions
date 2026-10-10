@@ -1,16 +1,21 @@
-import { BellIcon, BellOffIcon } from "lucide-react"
+import { BellIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { useAlerts } from "@/alerts"
+import { ntfyUrl, topicFor } from "@/alerts"
 
 export function WatchButton({ tld }: { tld: string }) {
-  const { alerts, setWatch } = useAlerts()
-  if (!alerts) return null
-  const on = alerts.watching.includes(tld)
+  const topic = topicFor(tld)
   return (
-    <Button variant={on ? "secondary" : "default"} onClick={() => setWatch(tld, !on)}>
-      {on ? <BellOffIcon /> : <BellIcon />}
-      {on ? "Stop alerts for this one" : "Alert me when this changes"}
-    </Button>
+    <div className="space-y-1">
+      <Button asChild>
+        <a href={ntfyUrl(topic)} target="_blank" rel="noreferrer">
+          <BellIcon />
+          Alert me when this changes
+        </a>
+      </Button>
+      <p className="text-muted-foreground">
+        Or subscribe to <code>{topic}</code> in the ntfy app
+      </p>
+    </div>
   )
 }
