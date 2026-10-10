@@ -6,4 +6,4 @@ cd "$(dirname "$0")"
 for s in pipeline/s1_*.py pipeline/s2_*.py pipeline/s3_*.py; do echo "== $s"; uv run python "$s"; done
 if [ "${1:-}" = "--alerts" ]; then uv run python pipeline/s4_send_alerts_to_ntfy.py; fi
 (cd web && pnpm build)
-uv run python prerender.py
+(cd web && pnpm prerender)

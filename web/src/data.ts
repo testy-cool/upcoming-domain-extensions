@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { createContext, useContext } from "react"
 
 export type Status = "live" | "applied" | "removed"
 
@@ -12,6 +12,8 @@ export interface Application {
   status: string
   backup_string: string | null
   url: string
+  // Added by the prerender step, so the server and the browser show the same name.
+  country_name?: string
 }
 
 export interface Report {
@@ -43,19 +45,21 @@ export interface Directory {
   tlds: Tld[]
 }
 
-let cache: Promise<Directory> | null = null
+// The whole list is loaded once, before the first render, on the server and in
+// the browser alike, so every page renders the same HTML in both places.
+const DirectoryContext = createContext<Directory | null>(null)
+export const DirectoryProvider = DirectoryContext.Provider
 
 export function useDirectory() {
-  const [data, setData] = useState<Directory | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  useEffect(() => {
-    cache ??= fetch(`${import.meta.env.BASE_URL}data/tlds.json`).then((r) => {
-      if (!r.ok) throw new Error(`Could not load the list (${r.status})`)
-      return r.json()
-    })
-    cache.then(setData, (e: Error) => setError(e.message))
-  }, [])
-  return { data, error }
+  const data = useContext(DirectoryContext)
+  if (!data) throw new Error("useDirectory needs a DirectoryProvider")
+  return { data }
+}
+
+export async function loadDirectory(): Promise<Directory> {
+  const r = await fetch(`${import.meta.env.BASE_URL}data/tlds.json`)
+  if (!r.ok) throw new Error(`Could not load the list (${r.status})`)
+  return r.json()
 }
 
 export const statusLabel: Record<Status, string> = {
@@ -78,12 +82,19 @@ export function activeApplications(t: Tld) {
   return t.applications.filter((a) => a.status === "Active")
 }
 
+const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")
+
+// Written out by hand: browsers and Node disagree on short month names ("Sep" or "Sept").
 export function formatDate(d: string | null) {
   if (!d) return ""
-  return new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  })
+  const [y, m, day] = d.slice(0, 10).split("-")
+  return `${Number(day)} ${MONTHS[Number(m) - 1]} ${y}`
+}
+
+export function formatUpdated(iso: string) {
+  return `${formatDate(iso)}, ${iso.slice(11, 16)} UTC`
+}
+
+export function countryName(a: Application) {
+  return a.country_name ?? a.country
 }

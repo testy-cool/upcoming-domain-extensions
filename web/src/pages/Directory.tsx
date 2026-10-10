@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router"
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router"
 import {
   type ColumnDef,
   type PaginationState,
@@ -84,8 +84,11 @@ function toRow(t: Tld): Row {
 }
 
 export function Directory() {
-  const { data, error } = useDirectory()
+  const { data } = useDirectory()
   const navigate = useNavigate()
+  // Where "Back to the list" returns to, with the search and tab kept.
+  const here = useLocation()
+  const back = here.pathname + here.search
   const [params, setParams] = useSearchParams()
   const view = (params.get("view") as View) ?? "applied"
   const query = params.get("q") ?? ""
@@ -98,7 +101,7 @@ export function Directory() {
     { id: "name", desc: false },
   ])
 
-  const allRows = useMemo(() => data?.tlds.map(toRow) ?? [], [data])
+  const allRows = useMemo(() => data.tlds.map(toRow), [data])
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase().replace(/^\./, "")
     return allRows.filter(
@@ -127,9 +130,15 @@ export function Directory() {
         ),
         cell: ({ row }) => (
           <div className="space-y-px">
-            <div className="text-foreground text-base font-medium">
+            <Link
+              to={`/${row.original.tld}/`}
+              state={{ back }}
+              viewTransition
+              onClick={(e) => e.stopPropagation()}
+              className="text-foreground text-base font-medium hover:underline"
+            >
               .{row.original.name}
-            </div>
+            </Link>
             {row.original.unicode && (
               <div className="text-muted-foreground">
                 .{row.original.unicode}
@@ -168,7 +177,7 @@ export function Directory() {
         size: 180,
       },
     ],
-    []
+    [back]
   )
 
   const table = useTable({
@@ -180,9 +189,6 @@ export function Directory() {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
   })
-
-  if (error) return <p className="text-destructive">{error}</p>
-  if (!data) return <p className="text-muted-foreground">Loading the list…</p>
 
   const count = (s: View) =>
     s === "all" ? data.tlds.length : data.counts[s as Status]
@@ -222,7 +228,7 @@ export function Directory() {
       <DataGrid
         table={table}
         recordCount={rows.length}
-        onRowClick={(row) => navigate(`/${row.tld}`)}
+        onRowClick={(row) => navigate(`/${row.tld}/`, { state: { back }, viewTransition: true })}
         emptyMessage="Nothing matches that search."
         tableLayout={{ headerSticky: true }}
       >
