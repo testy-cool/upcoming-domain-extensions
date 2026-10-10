@@ -1,17 +1,6 @@
-import { useMemo } from "react"
 import { Link, useLocation, useParams } from "react-router"
-import { type ColumnDef, useTable } from "@tanstack/react-table"
 import { ArrowLeftIcon } from "lucide-react"
 
-import { Badge } from "@/components/reui/badge"
-import {
-  DataGrid,
-  DataGridContainer,
-  dataGridFeatures,
-  type DataGridFeatures,
-} from "@/components/reui/data-grid/data-grid"
-import { DataGridScrollArea } from "@/components/reui/data-grid/data-grid-scroll-area"
-import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import {
   Timeline,
   TimelineDate,
@@ -23,129 +12,13 @@ import {
 } from "@/components/reui/timeline"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item"
 import { ExternalLink, Sources, type Source } from "@/components/sources"
+import { GoLiveNote } from "@/components/go-live-note"
 import { StatusBadge } from "@/components/status-badge"
+import { Applications, Facts, summary } from "@/components/tld-details"
 import { WatchButton } from "@/components/watch-button"
-import {
-  activeApplications,
-  countryName,
-  formatDate,
-  typeLabel,
-  useDirectory,
-  type Application,
-  type Tld,
-} from "@/data"
+import { activeApplications, formatDate, useDirectory, type Tld } from "@/data"
 import { ROUND_ANNOUNCEMENT } from "@/timeline"
-
-function summary(t: Tld) {
-  const apps = activeApplications(t)
-  if (t.status === "live")
-    return `In use since ${formatDate(t.delegated)}. Anyone can look up who runs it in the IANA record.`
-  if (t.status === "removed")
-    return `Taken out of the internet's root on ${formatDate(t.removed)}. Addresses ending in .${t.display} no longer work.`
-  if (apps.length > 1)
-    return `${apps.length} organisations applied for it in 2026. Only one can get it, so ICANN will settle the contest after evaluation.`
-  return "One organisation applied for it in 2026. It is waiting on ICANN's review."
-}
-
-function Facts({ t }: { t: Tld }) {
-  const facts: [string, React.ReactNode][] = [
-    ["Kind", typeLabel[t.type] ?? t.type],
-    ["Run by", t.manager],
-    ["Went live", formatDate(t.delegated)],
-    ["Removed on", formatDate(t.removed)],
-    ["Registry website", t.website && <ExternalLink href={t.website}>{t.website}</ExternalLink>],
-    ["WHOIS server", t.whois],
-  ]
-  return (
-    <ItemGroup className="gap-0 sm:grid sm:grid-cols-2">
-      {facts
-        .filter(([, value]) => value)
-        .map(([label, value]) => (
-          <Item key={label} size="sm" className="px-0">
-            <ItemContent>
-              <ItemDescription>{label}</ItemDescription>
-              <ItemTitle className="break-all">{value}</ItemTitle>
-            </ItemContent>
-          </Item>
-        ))}
-    </ItemGroup>
-  )
-}
-
-function Applications({ apps }: { apps: Application[] }) {
-  const columns = useMemo<ColumnDef<DataGridFeatures, Application>[]>(
-    () => [
-      {
-        accessorKey: "applicant",
-        header: "Applicant",
-        cell: ({ row }) => <span className="font-medium">{row.original.applicant}</span>,
-        size: 280,
-      },
-      {
-        id: "country",
-        header: "Based in",
-        cell: ({ row }) => countryName(row.original),
-        size: 160,
-      },
-      {
-        id: "kinds",
-        header: "Kind",
-        cell: ({ row }) =>
-          row.original.kinds.length ? (
-            <div className="flex flex-wrap gap-1">
-              {row.original.kinds.map((k) => (
-                <Badge key={k} variant="outline">
-                  {k}
-                </Badge>
-              ))}
-            </div>
-          ) : (
-            <span className="text-muted-foreground">Standard</span>
-          ),
-        size: 150,
-      },
-      {
-        id: "backup",
-        header: "Backup choice",
-        cell: ({ row }) =>
-          row.original.backup_string ? `.${row.original.backup_string}` : (
-            <span className="text-muted-foreground">None</span>
-          ),
-        size: 130,
-      },
-      {
-        id: "link",
-        header: "ICANN record",
-        cell: ({ row }) => <ExternalLink href={row.original.url}>{row.original.id}</ExternalLink>,
-        size: 210,
-      },
-    ],
-    []
-  )
-  const table = useTable({
-    features: dataGridFeatures,
-    columns,
-    data: apps,
-    getRowId: (a: Application) => a.id,
-  })
-  return (
-    <DataGrid table={table} recordCount={apps.length}>
-      <DataGridContainer>
-        <DataGridScrollArea>
-          <DataGridTable />
-        </DataGridScrollArea>
-      </DataGridContainer>
-    </DataGrid>
-  )
-}
 
 function History({ t }: { t: Tld }) {
   return (
@@ -228,6 +101,7 @@ export function TldPage() {
               {t.contention_set &&
                 ` This name is in contention set ${t.contention_set}: several applicants want it, or names close to it.`}
             </p>
+            <GoLiveNote />
             <Applications apps={apps} />
           </CardContent>
         </Card>
