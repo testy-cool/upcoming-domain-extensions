@@ -1,12 +1,16 @@
-"""Compare two snapshots of data/tlds.json and send the differences to ntfy."""
+"""Step 4: send what changed since the last run to the ntfy topic on the Alerts page.
+
+Part of f/upcoming_tlds/daily_update. Compares tlds.previous.json with
+tlds.json. Always reported: a domain going live, a live domain removed, a
+new 2026 application name, a name dropping out. For domains on the watch
+list (<data_dir>/alerts.json, set from the site), any change at all. The
+first run has nothing to compare with and sends nothing.
+"""
 
 import json
-import sys
 from pathlib import Path
 
 import httpx
-
-DATA = Path(__file__).parent / "data"
 
 
 def describe(old: dict, new: dict, watching: set[str]) -> list[str]:
@@ -43,9 +47,15 @@ def send(topic: str, lines: list[str], link: str):
     ).raise_for_status()
 
 
-if __name__ == "__main__":
-    old, new = (json.loads(Path(p).read_text()) for p in sys.argv[1:3])
-    alerts = json.loads((DATA / "alerts.json").read_text())
+def main(data_dir: str = "/home/vlad/upcoming-tlds/data", site_url: str = "http://100.124.28.119:8977"):
+    data = Path(data_dir)
+    if not (data / "tlds.previous.json").exists():
+        print("first run, nothing to compare with")
+        return {"changes": 0}
+    old = json.loads((data / "tlds.previous.json").read_text())
+    new = json.loads((data / "tlds.json").read_text())
+    alerts = json.loads((data / "alerts.json").read_text())
     lines = describe(old, new, set(alerts["watching"]))
     print("\n".join(lines) or "no changes")
-    send(alerts["topic"], lines, sys.argv[3] if len(sys.argv) > 3 else "")
+    send(alerts["topic"], lines, site_url)
+    return {"changes": len(lines), "topic": alerts["topic"], "lines": lines[:50]}

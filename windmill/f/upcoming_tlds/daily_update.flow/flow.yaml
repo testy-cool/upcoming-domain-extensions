@@ -1,0 +1,60 @@
+summary: Refresh the top-level domains directory and send alerts
+description: Downloads every live and removed domain from IANA and every
+  2026-round application from ICANN, rebuilds the file the directory site at
+  http://100.124.28.119:8977 reads, then sends what changed since the last
+  run to the ntfy topic shown on the site's Alerts page. Files live in
+  /home/vlad/upcoming-tlds/data.
+value:
+  modules:
+    - id: s1
+      summary: 1 download IANA's domain records
+      value:
+        type: script
+        input_transforms:
+          data_dir:
+            type: javascript
+            expr: flow_input.data_dir
+        path: f/upcoming_tlds/daily_update_steps/s1_download_iana_domain_records
+    - id: s2
+      summary: 2 download ICANN's 2026 applications
+      value:
+        type: script
+        input_transforms:
+          data_dir:
+            type: javascript
+            expr: flow_input.data_dir
+        path: f/upcoming_tlds/daily_update_steps/s2_download_icann_2026_applications
+    - id: s3
+      summary: 3 build the directory file
+      value:
+        type: script
+        input_transforms:
+          data_dir:
+            type: javascript
+            expr: flow_input.data_dir
+        path: f/upcoming_tlds/daily_update_steps/s3_build_the_directory_file
+    - id: s4
+      summary: 4 send alerts to ntfy
+      value:
+        type: script
+        input_transforms:
+          data_dir:
+            type: javascript
+            expr: flow_input.data_dir
+          site_url:
+            type: javascript
+            expr: flow_input.site_url
+        path: f/upcoming_tlds/daily_update_steps/s4_send_alerts_to_ntfy
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    data_dir:
+      type: string
+      description: Where the directory's files live on the zenbook
+      default: /home/vlad/upcoming-tlds/data
+    site_url:
+      type: string
+      description: The link an alert opens
+      default: http://100.124.28.119:8977
+  required: []

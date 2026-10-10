@@ -1,0 +1,15 @@
+summary: ''
+description: ''
+lock: '!inline
+  f/upcoming_tlds/daily_update_steps/s3_build_the_directory_file.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    data_dir:
+      type: string
+      description: ''
+      default: /home/vlad/upcoming-tlds/data
+      originalType: string
+  required: []

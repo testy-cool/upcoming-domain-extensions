@@ -1,0 +1,11 @@
+summary: Refresh the top-level domains directory every day at 09:00
+args: {}
+cron_version: v2
+email: admin@jobdex.local
+enabled: true
+is_flow: true
+no_flow_overlap: true
+schedule: 0 0 9 * * *
+script_path: f/upcoming_tlds/daily_update
+timezone: Europe/Bucharest
+ws_error_handler_muted: false

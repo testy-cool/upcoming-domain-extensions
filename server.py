@@ -10,6 +10,7 @@ ROOT = Path(__file__).parent
 DIST = ROOT / "web" / "dist"
 DATA = ROOT / "data"
 ALERTS = DATA / "alerts.json"
+HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "8977"))
 
 
@@ -68,5 +69,5 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print(f"http://127.0.0.1:{PORT}")
-    ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
+    print(f"http://{HOST}:{PORT}")
+    ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

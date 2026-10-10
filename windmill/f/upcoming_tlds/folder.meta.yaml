@@ -1,0 +1,6 @@
+summary: Top-level domains directory, http://100.124.28.119:8977
+display_name: upcoming_tlds
+extra_perms:
+  u/admin2: true
+owners:
+  - u/admin2

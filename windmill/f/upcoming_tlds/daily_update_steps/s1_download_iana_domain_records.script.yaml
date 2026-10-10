@@ -1,0 +1,15 @@
+summary: ''
+description: ''
+lock: '!inline
+  f/upcoming_tlds/daily_update_steps/s1_download_iana_domain_records.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    data_dir:
+      type: string
+      description: ''
+      default: /home/vlad/upcoming-tlds/data
+      originalType: string
+  required: []
