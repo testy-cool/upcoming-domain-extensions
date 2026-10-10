@@ -54,8 +54,8 @@ def parse_detail(page: str) -> dict:
         {"title": text(t), "date": d, "url": "https://www.iana.org" + u}
         for u, t, d in re.findall(r'<li><a href="(/reports/[^"]+)">(.*?)</a>\s*\((\d{4}-\d{2}-\d{2})\)', main, re.S)
     ]
-    site = re.search(r'URL for registration services:\s*<a href="([^"]+)"', main)
-    whois = re.search(r"WHOIS Server:\s*([^<\s]+)", main)
+    site = re.search(r'URL for registration services:</b>\s*<a href="([^"]+)"', main)
+    whois = re.search(r"WHOIS Server:</b>\s*([^<\s]+)", main)
     updated = re.search(r"Record last updated (\d{4}-\d{2}-\d{2})", main)
     registered = re.search(r"Registration date (\d{4}-\d{2}-\d{2})", main)
     return {
