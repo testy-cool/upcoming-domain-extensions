@@ -64,7 +64,7 @@ export async function loadDirectory(): Promise<Directory> {
 
 export const statusLabel: Record<Status, string> = {
   live: "Live",
-  applied: "Applied for in 2026",
+  applied: "Applied 2026",
   removed: "Removed",
 }
 

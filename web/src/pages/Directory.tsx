@@ -69,12 +69,13 @@ function toRow(t: Tld): Row {
   }
   const date =
     t.status === "removed" ? t.removed : t.status === "live" ? t.delegated : null
+  // Shown next to the status: since when it is live, or when it was removed.
   const dateLabel =
     t.status === "removed"
-      ? `Removed ${formatDate(date)}`
+      ? formatDate(date)
       : t.status === "live"
-        ? `Since ${formatDate(date)}`
-        : "Applied 2026"
+        ? `since ${date?.slice(0, 4) ?? "?"}`
+        : ""
   return {
     tld: t.tld,
     name: isIdn ? t.display : t.tld,
@@ -84,7 +85,10 @@ function toRow(t: Tld): Row {
     date: date ?? "9999",
     dateLabel,
     t,
-    kind: typeLabel[t.type] ?? t.type,
+    kind:
+      t.status === "applied"
+        ? [...new Set(apps.flatMap((a) => (a.kinds.length ? a.kinds : ["Standard"])))].join(", ")
+        : (typeLabel[t.type] ?? t.type),
     applicants: t.status === "applied" ? apps.length : null,
     countries: [...new Set(apps.map(countryName))].join(", "),
     search: [
@@ -298,13 +302,22 @@ export function Directory() {
         size: 220,
       },
       {
-        accessorKey: "status",
+        id: "status",
+        // Sorted by date, so live ones sort oldest first and removed ones by removal.
+        accessorFn: (r: Row) => `${r.status} ${r.date}`,
         header: ({ column }) => (
           <DataGridColumnHeader title="Status" column={column} />
         ),
         meta: { headerTitle: "Status" },
-        cell: ({ row }) => <StatusBadge status={row.original.status} />,
-        size: 170,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge status={row.original.status} />
+            {row.original.dateLabel && (
+              <span className="text-muted-foreground">{row.original.dateLabel}</span>
+            )}
+          </div>
+        ),
+        size: 230,
       },
       {
         accessorKey: "who",
@@ -315,18 +328,7 @@ export function Directory() {
         cell: (info) => (
           <span className="line-clamp-1">{info.getValue() as string}</span>
         ),
-        size: 360,
-      },
-      {
-        accessorKey: "date",
-        header: ({ column }) => (
-          <DataGridColumnHeader title="When" column={column} />
-        ),
-        meta: { headerTitle: "When" },
-        cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.dateLabel}</span>
-        ),
-        size: 180,
+        size: 420,
       },
       ...extraColumns,
     ],

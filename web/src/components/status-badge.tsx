@@ -3,7 +3,7 @@ import { statusLabel, type Status } from "@/data"
 
 const variant = {
   live: "success-light",
-  applied: "info-light",
+  applied: "outline",
   removed: "secondary",
 } as const
 
