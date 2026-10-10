@@ -1,52 +1,48 @@
-import { useNavigate, useParams } from "react-router"
-import { ArrowLeftIcon, ExternalLinkIcon } from "lucide-react"
+import { useMemo } from "react"
+import { Link, useLocation, useParams } from "react-router"
+import { type ColumnDef, useTable } from "@tanstack/react-table"
+import { ArrowLeftIcon } from "lucide-react"
 
 import { Badge } from "@/components/reui/badge"
+import {
+  DataGrid,
+  DataGridContainer,
+  dataGridFeatures,
+  type DataGridFeatures,
+} from "@/components/reui/data-grid/data-grid"
+import { DataGridScrollArea } from "@/components/reui/data-grid/data-grid-scroll-area"
+import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
+import {
+  Timeline,
+  TimelineDate,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/components/reui/timeline"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item"
+import { ExternalLink, Sources, type Source } from "@/components/sources"
 import { StatusBadge } from "@/components/status-badge"
 import { WatchButton } from "@/components/watch-button"
 import {
   activeApplications,
+  countryName,
   formatDate,
   typeLabel,
   useDirectory,
+  type Application,
   type Tld,
 } from "@/data"
 import { ROUND_ANNOUNCEMENT } from "@/timeline"
-
-function Ext({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="text-primary inline-flex items-center gap-1 underline-offset-4 hover:underline"
-    >
-      {children}
-      <ExternalLinkIcon className="size-3.5" />
-    </a>
-  )
-}
-
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
-  if (!children) return null
-  return (
-    <div className="grid grid-cols-[12rem_1fr] gap-4 py-2">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd>{children}</dd>
-    </div>
-  )
-}
-
-const countries = new Intl.DisplayNames(["en"], { type: "region" })
-function countryName(code: string) {
-  try {
-    return countries.of(code) ?? code
-  } catch {
-    return code
-  }
-}
 
 function summary(t: Tld) {
   const apps = activeApplications(t)
@@ -59,34 +55,152 @@ function summary(t: Tld) {
   return "One organisation applied for it in 2026. It is waiting on ICANN's review."
 }
 
+function Facts({ t }: { t: Tld }) {
+  const facts: [string, React.ReactNode][] = [
+    ["Kind", typeLabel[t.type] ?? t.type],
+    ["Run by", t.manager],
+    ["Went live", formatDate(t.delegated)],
+    ["Removed on", formatDate(t.removed)],
+    ["Registry website", t.website && <ExternalLink href={t.website}>{t.website}</ExternalLink>],
+    ["WHOIS server", t.whois],
+  ]
+  return (
+    <ItemGroup className="gap-0 sm:grid sm:grid-cols-2">
+      {facts
+        .filter(([, value]) => value)
+        .map(([label, value]) => (
+          <Item key={label} size="sm" className="px-0">
+            <ItemContent>
+              <ItemDescription>{label}</ItemDescription>
+              <ItemTitle className="break-all">{value}</ItemTitle>
+            </ItemContent>
+          </Item>
+        ))}
+    </ItemGroup>
+  )
+}
+
+function Applications({ apps }: { apps: Application[] }) {
+  const columns = useMemo<ColumnDef<DataGridFeatures, Application>[]>(
+    () => [
+      {
+        accessorKey: "applicant",
+        header: "Applicant",
+        cell: ({ row }) => <span className="font-medium">{row.original.applicant}</span>,
+        size: 280,
+      },
+      {
+        id: "country",
+        header: "Based in",
+        cell: ({ row }) => countryName(row.original),
+        size: 160,
+      },
+      {
+        id: "kinds",
+        header: "Kind",
+        cell: ({ row }) =>
+          row.original.kinds.length ? (
+            <div className="flex flex-wrap gap-1">
+              {row.original.kinds.map((k) => (
+                <Badge key={k} variant="outline">
+                  {k}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <span className="text-muted-foreground">Standard</span>
+          ),
+        size: 150,
+      },
+      {
+        id: "backup",
+        header: "Backup choice",
+        cell: ({ row }) =>
+          row.original.backup_string ? `.${row.original.backup_string}` : (
+            <span className="text-muted-foreground">None</span>
+          ),
+        size: 130,
+      },
+      {
+        id: "link",
+        header: "ICANN record",
+        cell: ({ row }) => <ExternalLink href={row.original.url}>{row.original.id}</ExternalLink>,
+        size: 210,
+      },
+    ],
+    []
+  )
+  const table = useTable({
+    features: dataGridFeatures,
+    columns,
+    data: apps,
+    getRowId: (a: Application) => a.id,
+  })
+  return (
+    <DataGrid table={table} recordCount={apps.length}>
+      <DataGridContainer>
+        <DataGridScrollArea>
+          <DataGridTable />
+        </DataGridScrollArea>
+      </DataGridContainer>
+    </DataGrid>
+  )
+}
+
+function History({ t }: { t: Tld }) {
+  return (
+    <Timeline defaultValue={t.history.length}>
+      {t.history.map((h, i) => (
+        <TimelineItem key={h.url} step={i + 1}>
+          <TimelineHeader>
+            <TimelineSeparator />
+            <TimelineDate dateTime={h.date}>{formatDate(h.date)}</TimelineDate>
+            <TimelineTitle>
+              <ExternalLink href={h.url}>{h.title}</ExternalLink>
+            </TimelineTitle>
+            <TimelineIndicator />
+          </TimelineHeader>
+        </TimelineItem>
+      ))}
+    </Timeline>
+  )
+}
+
 export function TldPage() {
   const { name } = useParams()
-  const { data, error } = useDirectory()
-  const navigate = useNavigate()
-  if (error) return <p className="text-destructive">{error}</p>
-  if (!data) return <p className="text-muted-foreground">Loading…</p>
+  const { data } = useDirectory()
+  const back = (useLocation().state as { back?: string } | null)?.back ?? "/"
   const t = data.tlds.find((x) => x.tld === name)
   if (!t) return <p>No domain called .{name} in the list.</p>
   const apps = activeApplications(t)
+  const sources: Source[] = [
+    ...(t.iana_url ? [{ title: `IANA root zone record for .${t.tld}`, href: t.iana_url }] : []),
+    ...(apps.length
+      ? [
+          { title: "ICANN 2026 application search", href: "https://newgtldprogram-aps.icann.org/applications" },
+          { title: "ICANN reveal-day announcement, 7 Oct 2026", href: ROUND_ANNOUNCEMENT },
+        ]
+      : []),
+  ]
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" onClick={() => navigate(-1)} className="-ml-3">
-        <ArrowLeftIcon /> Back to the list
+      <Button variant="ghost" asChild className="-ml-3">
+        <Link to={back} viewTransition>
+          <ArrowLeftIcon /> Back to the list
+        </Link>
       </Button>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
+        <div className="max-w-3xl space-y-2">
           <h1 className="text-3xl font-semibold">
             .{t.display}
             {t.display !== t.tld && (
-              <span className="text-muted-foreground ml-3 text-lg font-normal">
-                .{t.tld}
-              </span>
+              <span className="text-muted-foreground ml-3 text-lg font-normal">.{t.tld}</span>
             )}
           </h1>
           <StatusBadge status={t.status} />
-          <p className="text-muted-foreground max-w-2xl">{summary(t)}</p>
+          <p className="text-muted-foreground">{summary(t)}</p>
         </div>
         <WatchButton tld={t.tld} />
       </div>
@@ -97,16 +211,7 @@ export function TldPage() {
             <CardTitle>Facts</CardTitle>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y">
-              <Fact label="Kind">{typeLabel[t.type] ?? t.type}</Fact>
-              <Fact label="Run by">{t.manager}</Fact>
-              <Fact label="Went live">{formatDate(t.delegated)}</Fact>
-              <Fact label="Removed on">{formatDate(t.removed)}</Fact>
-              <Fact label="Registry website">
-                {t.website && <Ext href={t.website}>{t.website}</Ext>}
-              </Fact>
-              <Fact label="WHOIS server">{t.whois}</Fact>
-            </dl>
+            <Facts t={t} />
           </CardContent>
         </Card>
       )}
@@ -114,39 +219,16 @@ export function TldPage() {
       {apps.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>
-              2026 applications ({apps.length})
-            </CardTitle>
+            <CardTitle>2026 applications ({apps.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              Every application is still in ICANN's first stage,
-              {" "}{apps[0].stage.toLowerCase()}. The final list of names comes
-              out on 17 November 2026.
+            <p className="text-muted-foreground max-w-3xl">
+              Every application is still in ICANN's first stage, {apps[0].stage.toLowerCase()}. The
+              final list of names comes out on 17 November 2026.
               {t.contention_set &&
                 ` This name is in contention set ${t.contention_set}: several applicants want it, or names close to it.`}
             </p>
-            <ul className="divide-y">
-              {apps.map((a) => (
-                <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <div className="space-y-1">
-                    <div className="font-medium">{a.applicant}</div>
-                    <div className="text-muted-foreground flex flex-wrap items-center gap-2">
-                      <span>Based in {countryName(a.country)}</span>
-                      {a.kinds.map((k) => (
-                        <Badge key={k} variant="outline">
-                          {k}
-                        </Badge>
-                      ))}
-                      {a.backup_string && (
-                        <span>Backup choice: .{a.backup_string}</span>
-                      )}
-                    </div>
-                  </div>
-                  <Ext href={a.url}>Application {a.id}</Ext>
-                </li>
-              ))}
-            </ul>
+            <Applications apps={apps} />
           </CardContent>
         </Card>
       )}
@@ -157,14 +239,7 @@ export function TldPage() {
             <CardTitle>History</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y">
-              {t.history.map((h) => (
-                <li key={h.url} className="grid grid-cols-[8rem_1fr] gap-4 py-2">
-                  <span className="text-muted-foreground">{formatDate(h.date)}</span>
-                  <Ext href={h.url}>{h.title}</Ext>
-                </li>
-              ))}
-            </ul>
+            <History t={t} />
           </CardContent>
         </Card>
       )}
@@ -174,25 +249,7 @@ export function TldPage() {
           <CardTitle>Official sources</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            {t.iana_url && (
-              <li>
-                <Ext href={t.iana_url}>IANA root zone record for .{t.tld}</Ext>
-              </li>
-            )}
-            {apps.length > 0 && (
-              <>
-                <li>
-                  <Ext href={`https://newgtldprogram-aps.icann.org/applications`}>
-                    ICANN 2026 application search
-                  </Ext>
-                </li>
-                <li>
-                  <Ext href={ROUND_ANNOUNCEMENT}>ICANN reveal-day announcement, 7 Oct 2026</Ext>
-                </li>
-              </>
-            )}
-          </ul>
+          <Sources sources={sources} />
         </CardContent>
       </Card>
     </div>

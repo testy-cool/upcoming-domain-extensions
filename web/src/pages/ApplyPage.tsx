@@ -1,32 +1,53 @@
-import { ExternalLinkIcon } from "lucide-react"
-
+import {
+  Timeline,
+  TimelineContent,
+  TimelineDate,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/components/reui/timeline"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatDate } from "@/data"
+import { ExternalLink, Sources, type Source } from "@/components/sources"
+import { formatDate, useDirectory } from "@/data"
 import { ROUND_ANNOUNCEMENT, timeline } from "@/timeline"
 
 const JOURNEY = "https://newgtldprogram.icann.org/en/application-rounds/round2/applicant-journey"
 const GUIDEBOOK_FEES =
   "https://newgtldprogram-2026-agb.icann.org/en/7-module-3-application-submission.html"
 
+// The date each step started in the 2026 round, where ICANN has given one.
 const steps = [
-  ["Prepare", "Gather the documents, the business plan and a technical provider.", `${JOURNEY}/prepare-to-apply`],
-  ["Apply", "Submit the application in ICANN's system while a round is open.", `${JOURNEY}/application-submission`],
-  ["Reveal", "ICANN publishes every name and who applied for it.", `${JOURNEY}/pre-evaluation`],
-  ["Comments and objections", "Anyone can comment. Some groups can formally object.", `${JOURNEY}/community-input`],
-  ["Name check", "ICANN checks the name is technically safe and allowed.", null],
-  ["Contest", "If several applicants want the same name, ICANN settles it by a community priority review or an auction.", `${JOURNEY}/contention-set-resolution`],
-  ["Applicant check", "ICANN checks the organisation, its finances and its people.", null],
-  ["Contract", "The winner signs a registry agreement with ICANN.", "https://newgtldprogram.icann.org/en/application-rounds/round2/interested-in-applying/new-gtld-application/base-registry-agreement"],
-  ["Go live", "Technical tests, then IANA adds the name to the internet's root.", null],
+  ["Prepare", "Gather the documents, the business plan and a technical provider.", `${JOURNEY}/prepare-to-apply`, null],
+  ["Apply", "Submit the application in ICANN's system while a round is open.", `${JOURNEY}/application-submission`, "2026-04-30"],
+  ["Reveal", "ICANN publishes every name and who applied for it.", `${JOURNEY}/pre-evaluation`, "2026-10-07"],
+  ["Comments and objections", "Anyone can comment. Some groups can formally object.", `${JOURNEY}/community-input`, "2026-11-17"],
+  ["Name check", "ICANN checks the name is technically safe and allowed.", null, null],
+  ["Contest", "If several applicants want the same name, ICANN settles it by a community priority review or an auction.", `${JOURNEY}/contention-set-resolution`, null],
+  ["Applicant check", "ICANN checks the organisation, its finances and its people.", null, null],
+  ["Contract", "The winner signs a registry agreement with ICANN.", "https://newgtldprogram.icann.org/en/application-rounds/round2/interested-in-applying/new-gtld-application/base-registry-agreement", null],
+  ["Go live", "Technical tests, then IANA adds the name to the internet's root.", null, null],
 ] as const
 
-function Ext({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a href={href} target="_blank" rel="noreferrer" className="text-primary inline-flex items-center gap-1 underline-offset-4 hover:underline">
-      {children}
-      <ExternalLinkIcon className="size-3.5" />
-    </a>
-  )
+const sources: Source[] = [
+  { title: "ICANN New gTLD Program", href: "https://newgtldprogram.icann.org/en" },
+  { title: "ICANN applicant journey, step by step", href: JOURNEY },
+  { title: "2026 Applicant Guidebook", href: "https://newgtldprogram-2026-agb.icann.org/en/" },
+  { title: "Every 2026 application, ICANN search", href: "https://newgtldprogram-aps.icann.org/applications" },
+  { title: "Reveal-day announcement and dates, 7 Oct 2026", href: ROUND_ANNOUNCEMENT },
+  { title: "IANA root zone database, every live and removed ending", href: "https://www.iana.org/domains/root/db" },
+]
+
+// The number of the last entry that had started by the day the data was
+// collected. Fixed by the data, not the clock, so the server and the browser
+// draw the same timeline. Entries without an exact date never count.
+function reached(dates: readonly (string | null)[], today: string) {
+  let last = 0
+  dates.forEach((d, i) => {
+    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && d <= today) last = i + 1
+  })
+  return last
 }
 
 function when(d: string, end?: string) {
@@ -35,6 +56,7 @@ function when(d: string, end?: string) {
 }
 
 export function ApplyPage() {
+  const today = useDirectory().data.collected_at.slice(0, 10)
   return (
     <div className="space-y-6">
       <div className="max-w-3xl space-y-2">
@@ -51,17 +73,19 @@ export function ApplyPage() {
         <CardHeader>
           <CardTitle>The 2026 round, where it stands</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <ul className="divide-y">
-            {timeline.map((s) => (
-              <li key={s.what} className="grid grid-cols-[14rem_1fr] gap-4 py-2">
-                <span className="text-muted-foreground">
-                  {when(s.date, "end" in s ? s.end : undefined)}
-                </span>
-                <span>{s.what}</span>
-              </li>
+        <CardContent className="space-y-4">
+          <Timeline defaultValue={reached(timeline.map((s) => s.date), today)}>
+            {timeline.map((s, i) => (
+              <TimelineItem key={s.what} step={i + 1}>
+                <TimelineHeader>
+                  <TimelineSeparator />
+                  <TimelineDate>{when(s.date, "end" in s ? s.end : undefined)}</TimelineDate>
+                  <TimelineTitle>{s.what}</TimelineTitle>
+                  <TimelineIndicator />
+                </TimelineHeader>
+              </TimelineItem>
             ))}
-          </ul>
+          </Timeline>
           <p className="text-muted-foreground">
             The window to apply is closed. ICANN has not announced the next one.
           </p>
@@ -73,18 +97,22 @@ export function ApplyPage() {
           <CardTitle>The steps an applicant goes through</CardTitle>
         </CardHeader>
         <CardContent>
-          <ol className="divide-y">
+          <Timeline defaultValue={reached(steps.map((s) => s[3]), today)}>
             {steps.map(([title, text, href], i) => (
-              <li key={title} className="grid grid-cols-[2rem_1fr] gap-3 py-3">
-                <span className="text-muted-foreground">{i + 1}</span>
-                <div className="space-y-1">
-                  <div className="font-medium">{title}</div>
-                  <p className="text-muted-foreground">{text}</p>
-                  {href && <Ext href={href}>ICANN page</Ext>}
-                </div>
-              </li>
+              <TimelineItem key={title} step={i + 1}>
+                <TimelineHeader>
+                  <TimelineSeparator />
+                  <TimelineDate>Step {i + 1}</TimelineDate>
+                  <TimelineTitle>{title}</TimelineTitle>
+                  <TimelineIndicator />
+                </TimelineHeader>
+                <TimelineContent className="space-y-1">
+                  <p>{text}</p>
+                  {href && <ExternalLink href={href}>ICANN page</ExternalLink>}
+                </TimelineContent>
+              </TimelineItem>
             ))}
-          </ol>
+          </Timeline>
         </CardContent>
       </Card>
 
@@ -99,7 +127,7 @@ export function ApplyPage() {
             less. Some reviews cost extra, for example USD 52,936 for a
             community priority review.
           </p>
-          <Ext href={GUIDEBOOK_FEES}>Applicant Guidebook, module 3, fees</Ext>
+          <ExternalLink href={GUIDEBOOK_FEES}>Applicant Guidebook, module 3, fees</ExternalLink>
         </CardContent>
       </Card>
 
@@ -108,14 +136,7 @@ export function ApplyPage() {
           <CardTitle>Official sources</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            <li><Ext href="https://newgtldprogram.icann.org/en">ICANN New gTLD Program</Ext></li>
-            <li><Ext href={JOURNEY}>ICANN applicant journey, step by step</Ext></li>
-            <li><Ext href="https://newgtldprogram-2026-agb.icann.org/en/">2026 Applicant Guidebook</Ext></li>
-            <li><Ext href="https://newgtldprogram-aps.icann.org/applications">Every 2026 application, ICANN search</Ext></li>
-            <li><Ext href={ROUND_ANNOUNCEMENT}>Reveal-day announcement and dates, 7 Oct 2026</Ext></li>
-            <li><Ext href="https://www.iana.org/domains/root/db">IANA root zone database, every live and removed ending</Ext></li>
-          </ul>
+          <Sources sources={sources} />
         </CardContent>
       </Card>
     </div>
