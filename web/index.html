@@ -2,8 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Follow the device's light or dark setting, before the page is drawn.
+      (() => {
+        const dark = matchMedia("(prefers-color-scheme: dark)")
+        const apply = () => document.documentElement.classList.toggle("dark", dark.matches)
+        apply()
+        dark.addEventListener("change", apply)
+      })()
+    </script>
     <title>Upcoming domain extensions: every new TLD applied for in 2026</title>
     <meta name="description" content="Every new domain extension companies applied for in ICANN's 2026 round, plus every live and removed one. Search by name or company. Updated daily." />
   </head>
