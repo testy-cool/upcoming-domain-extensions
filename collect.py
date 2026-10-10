@@ -149,9 +149,14 @@ async def collect_applications(client) -> list[dict]:
 
 def merge(iana: list[dict], apps: list[dict], contention: dict[str, int]) -> list[dict]:
     by_tld = {t["tld"]: t | {"applications": []} for t in iana}
+    # An "-R" record is the backup string named for the application with the
+    # same id. It stays a note on that application unless the applicant
+    # switches to it during the Replacement Period.
+    backups = {a["applicationHumanReadableId"][:-2]: a["primaryString"]["aLabel"].lower()
+               for a in apps if a["applicationHumanReadableId"].endswith("-R") and a["applicationStatus"] == "Active"}
     for a in apps:
-        if a["applicationStatus"] != "Active":
-            continue  # replacement strings the applicant did not switch to
+        if a["applicationHumanReadableId"].endswith("-R"):
+            continue
         label = a["primaryString"]["aLabel"].lower()
         entry = by_tld.setdefault(label, {
             "tld": label,
@@ -172,7 +177,7 @@ def merge(iana: list[dict], apps: list[dict], contention: dict[str, int]) -> lis
             "kinds": a["tldTypes"],
             "stage": a["processingStage"],
             "status": a["applicationStatus"],
-            "replacement": app_id.endswith("-R"),
+            "backup_string": backups.get(app_id),
             "url": f"{ICANN_APP_PAGE}/{app_id}",
         })
     for entry in by_tld.values():
