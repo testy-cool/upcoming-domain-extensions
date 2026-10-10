@@ -1,0 +1,4 @@
+data/
+.venv/
+web/node_modules/
+web/dist/
