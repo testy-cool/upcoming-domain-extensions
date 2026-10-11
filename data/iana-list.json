@@ -8503,13 +8503,13 @@
  },
  {
   "slug": "xn--4dbrk0ce",
-  "display": "&#x200f;.ישראל&#x200e;",
+  "display": "ישראל",
   "type": "country-code",
   "manager": "The Israel Internet Association (RA)"
  },
  {
   "slug": "xn--4gbrim",
-  "display": "&#x200f;.موقع&#x200e;",
+  "display": "موقع",
   "type": "generic",
   "manager": "Helium TLDs Ltd"
  },
@@ -8623,7 +8623,7 @@
  },
  {
   "slug": "xn--9dbq2a",
-  "display": "&#x200f;.קום&#x200e;",
+  "display": "קום",
   "type": "generic",
   "manager": "VeriSign Sarl"
  },
@@ -8725,7 +8725,7 @@
  },
  {
   "slug": "xn--deba0ad",
-  "display": "&#x200f;.טעסט&#x200e;",
+  "display": "טעסט",
   "type": "test",
   "manager": "Not assigned"
  },
@@ -8761,7 +8761,7 @@
  },
  {
   "slug": "xn--fhbei",
-  "display": "&#x200f;.كوم&#x200e;",
+  "display": "كوم",
   "type": "generic",
   "manager": "VeriSign Sarl"
  },
@@ -8869,7 +8869,7 @@
  },
  {
   "slug": "xn--hgbk6aj7f53bba",
-  "display": "&#x200f;.آزمایشی&#x200e;",
+  "display": "آزمایشی",
   "type": "test",
   "manager": "Not assigned"
  },
@@ -8953,7 +8953,7 @@
  },
  {
   "slug": "xn--kgbechtv",
-  "display": "&#x200f;.إختبار&#x200e;",
+  "display": "إختبار",
   "type": "test",
   "manager": "Not assigned"
  },
@@ -8989,145 +8989,145 @@
  },
  {
   "slug": "xn--lgbbat1ad8j",
-  "display": "&#x200f;.الجزائر&#x200e;",
+  "display": "الجزائر",
   "type": "country-code",
   "manager": "CERIST"
  },
  {
   "slug": "xn--mgb9awbf",
-  "display": "&#x200f;.عمان&#x200e;",
+  "display": "عمان",
   "type": "country-code",
   "manager": "Telecommunications Regulatory Authority (TRA)"
  },
  {
   "slug": "xn--mgba3a3ejt",
-  "display": "&#x200f;.ارامكو&#x200e;",
+  "display": "ارامكو",
   "type": "generic",
   "manager": "Aramco Services Company"
  },
  {
   "slug": "xn--mgba3a4f16a",
-  "display": "&#x200f;.ایران&#x200e;",
+  "display": "ایران",
   "type": "country-code",
   "manager": "Institute for Research in Fundamental Sciences (IPM)"
  },
  {
   "slug": "xn--mgba7c0bbn0a",
-  "display": "&#x200f;.العليان&#x200e;",
+  "display": "العليان",
   "type": "generic",
   "manager": "Competrol (Luxembourg) Sarl"
  },
  {
   "slug": "xn--mgbaakc7dvf",
-  "display": "&#x200f;.اتصالات&#x200e;",
+  "display": "اتصالات",
   "type": "generic",
   "manager": "Not assigned"
  },
  {
   "slug": "xn--mgbaam7a8h",
-  "display": "&#x200f;.امارات&#x200e;",
+  "display": "امارات",
   "type": "country-code",
   "manager": "Telecommunications and Digital Government Regulatory Authority (TDRA)"
  },
  {
   "slug": "xn--mgbab2bd",
-  "display": "&#x200f;.بازار&#x200e;",
+  "display": "بازار",
   "type": "generic",
   "manager": "CORE Association"
  },
  {
   "slug": "xn--mgbah1a3hjkrd",
-  "display": "&#x200f;.موريتانيا&#x200e;",
+  "display": "موريتانيا",
   "type": "country-code",
   "manager": "Université de Nouakchott Al Aasriya"
  },
  {
   "slug": "xn--mgbai9azgqp6j",
-  "display": "&#x200f;.پاکستان&#x200e;",
+  "display": "پاکستان",
   "type": "country-code",
   "manager": "National Telecommunication Corporation"
  },
  {
   "slug": "xn--mgbayh7gpa",
-  "display": "&#x200f;.الاردن&#x200e;",
+  "display": "الاردن",
   "type": "country-code",
   "manager": "Ministry of Digital Economy and Entrepreneurship (MoDEE)"
  },
  {
   "slug": "xn--mgbb9fbpob",
-  "display": "&#x200f;.موبايلي&#x200e;",
+  "display": "موبايلي",
   "type": "generic",
   "manager": "Not assigned"
  },
  {
   "slug": "xn--mgbbh1a",
-  "display": "&#x200f;.بارت&#x200e;",
+  "display": "بارت",
   "type": "country-code",
   "manager": "National Internet eXchange of India"
  },
  {
   "slug": "xn--mgbbh1a71e",
-  "display": "&#x200f;.بھارت&#x200e;",
+  "display": "بھارت",
   "type": "country-code",
   "manager": "National Internet Exchange of India"
  },
  {
   "slug": "xn--mgbc0a9azcg",
-  "display": "&#x200f;.المغرب&#x200e;",
+  "display": "المغرب",
   "type": "country-code",
   "manager": "Agence Nationale de Réglementation des Télécommunications (ANRT)"
  },
  {
   "slug": "xn--mgbca7dzdo",
-  "display": "&#x200f;.ابوظبي&#x200e;",
+  "display": "ابوظبي",
   "type": "generic",
   "manager": "Abu Dhabi Systems and Information Centre"
  },
  {
   "slug": "xn--mgbcpq6gpa1a",
-  "display": "&#x200f;.البحرين&#x200e;",
+  "display": "البحرين",
   "type": "country-code",
   "manager": "Telecommunications Regulatory Authority (TRA)"
  },
  {
   "slug": "xn--mgberp4a5d4ar",
-  "display": "&#x200f;.السعودية&#x200e;",
+  "display": "السعودية",
   "type": "country-code",
   "manager": "Communications, Space and Technology Commission"
  },
  {
   "slug": "xn--mgbgu82a",
-  "display": "&#x200f;.ڀارت&#x200e;",
+  "display": "ڀارت",
   "type": "country-code",
   "manager": "National Internet eXchange of India"
  },
  {
   "slug": "xn--mgbi4ecexp",
-  "display": "&#x200f;.كاثوليك&#x200e;",
+  "display": "كاثوليك",
   "type": "generic",
   "manager": "Pontificium Consilium de Comunicationibus Socialibus (PCCS) (Pontifical Council for Social Communication)"
  },
  {
   "slug": "xn--mgbpl2fh",
-  "display": "&#x200f;.سودان&#x200e;",
+  "display": "سودان",
   "type": "country-code",
   "manager": "Sudan Internet Society"
  },
  {
   "slug": "xn--mgbt3dhd",
-  "display": "&#x200f;.همراه&#x200e;",
+  "display": "همراه",
   "type": "generic",
   "manager": "Emergency Back-End Registry Operator Program - ICANN"
  },
  {
   "slug": "xn--mgbtx2b",
-  "display": "&#x200f;.عراق&#x200e;",
+  "display": "عراق",
   "type": "country-code",
   "manager": "Communications and Media Commission (CMC)"
  },
  {
   "slug": "xn--mgbx4cd0ab",
-  "display": "&#x200f;.مليسيا&#x200e;",
+  "display": "مليسيا",
   "type": "country-code",
   "manager": "MYNIC Berhad"
  },
@@ -9151,19 +9151,19 @@
  },
  {
   "slug": "xn--ngbc5azd",
-  "display": "&#x200f;.شبكة&#x200e;",
+  "display": "شبكة",
   "type": "generic",
   "manager": "International Domain Registry Pty. Ltd."
  },
  {
   "slug": "xn--ngbe9e0a",
-  "display": "&#x200f;.بيتك&#x200e;",
+  "display": "بيتك",
   "type": "generic",
   "manager": "Kuwait Finance House"
  },
  {
   "slug": "xn--ngbrx",
-  "display": "&#x200f;.عرب&#x200e;",
+  "display": "عرب",
   "type": "generic",
   "manager": "League of Arab States"
  },
@@ -9199,7 +9199,7 @@
  },
  {
   "slug": "xn--ogbpf8fl",
-  "display": "&#x200f;.سورية&#x200e;",
+  "display": "سورية",
   "type": "country-code",
   "manager": "National Authority for Information Technology Services (NAITS)"
  },
@@ -9229,7 +9229,7 @@
  },
  {
   "slug": "xn--pgbs0dh",
-  "display": "&#x200f;.تونس&#x200e;",
+  "display": "تونس",
   "type": "country-code",
   "manager": "Agence Tunisienne d'Internet"
  },
@@ -9361,13 +9361,13 @@
  },
  {
   "slug": "xn--wgbh1c",
-  "display": "&#x200f;.مصر&#x200e;",
+  "display": "مصر",
   "type": "country-code",
   "manager": "National Telecommunication Regulatory Authority - NTRA"
  },
  {
   "slug": "xn--wgbl6a",
-  "display": "&#x200f;.قطر&#x200e;",
+  "display": "قطر",
   "type": "country-code",
   "manager": "Communications Regulatory Authority"
  },
@@ -9403,7 +9403,7 @@
  },
  {
   "slug": "xn--ygbi2ammx",
-  "display": "&#x200f;.فلسطين&#x200e;",
+  "display": "فلسطين",
   "type": "country-code",
   "manager": "Ministry of Telecom & Information Technology (MTIT)"
  },
