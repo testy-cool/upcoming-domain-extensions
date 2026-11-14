@@ -88,6 +88,7 @@ const alphabetLabel: Record<string, string> = {
   Gurmukhi: "Gurmukhi (Punjabi)",
 }
 const ANY = "any"
+const labelOf = (a: string) => (Object.hasOwn(alphabetLabel, a) ? alphabetLabel[a] : a)
 
 // The letter an ending is filed under. An accent is dropped, so .québec is under Q.
 // Endings in another alphabet, such as .рф or .中国, are under none.
@@ -290,8 +291,8 @@ export function Directory() {
   const [params, setParams] = useSearchParams()
   const view = (params.get("view") as View) ?? "live"
   const query = params.get("q") ?? ""
-  const letter = params.get("letter") ?? ""
-  const alphabet = params.get("alphabet") ?? ""
+  const askedLetter = params.get("letter") ?? ""
+  const askedAlphabet = params.get("alphabet") ?? ""
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -327,6 +328,13 @@ export function Directory() {
   ])
 
   const allRows = useMemo(() => data.tlds.map(toRow), [data])
+  // A link can carry any value. An alphabet no ending uses, or a letter that is not
+  // a to z, counts as no filter. So does a letter next to a non-Latin alphabet,
+  // because the letter dropdown is hidden then and could not be cleared.
+  const knownAlphabets = useMemo(() => new Set(allRows.map((r) => r.alphabet)), [allRows])
+  const alphabet = knownAlphabets.has(askedAlphabet) ? askedAlphabet : ""
+  const letter =
+    LETTERS.includes(askedLetter) && (!alphabet || alphabet === "Latin") ? askedLetter : ""
   // The endings in this tab, before the search, the alphabet and the letter.
   const inView = useMemo(
     () => allRows.filter((r) => view === "all" || r.status === view),
@@ -523,13 +531,13 @@ export function Directory() {
             >
               <SelectTrigger aria-label="Alphabet" className="w-fit min-w-40">
                 {/* Named here so the page sent by the server shows it too. */}
-                <SelectValue>{alphabet ? (alphabetLabel[alphabet] ?? alphabet) : "All alphabets"}</SelectValue>
+                <SelectValue>{alphabet ? labelOf(alphabet) : "All alphabets"}</SelectValue>
               </SelectTrigger>
               <SelectContent position="popper" align="start">
                 <SelectItem value={ANY}>All alphabets</SelectItem>
                 {alphabets.map(([a, n]) => (
                   <SelectItem key={a} value={a}>
-                    {alphabetLabel[a] ?? a} ({n})
+                    {labelOf(a)} ({n})
                   </SelectItem>
                 ))}
               </SelectContent>
