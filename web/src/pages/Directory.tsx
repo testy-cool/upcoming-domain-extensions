@@ -194,7 +194,7 @@ export function Directory() {
   const here = useLocation()
   const back = here.pathname + here.search
   const [params, setParams] = useSearchParams()
-  const view = (params.get("view") as View) ?? "applied"
+  const view = (params.get("view") as View) ?? "live"
   const query = params.get("q") ?? ""
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -373,8 +373,8 @@ export function Directory() {
           <div className="flex flex-wrap items-center gap-3">
             <Tabs value={view} onValueChange={(v) => update({ view: v as View })}>
               <TabsList>
-                <TabsTrigger value="applied">Upcoming<span className="hidden sm:inline">&nbsp;({count("applied")})</span></TabsTrigger>
                 <TabsTrigger value="live">Live<span className="hidden sm:inline">&nbsp;({count("live")})</span></TabsTrigger>
+                <TabsTrigger value="applied">Upcoming<span className="hidden sm:inline">&nbsp;({count("applied")})</span></TabsTrigger>
                 <TabsTrigger value="removed">Removed<span className="hidden sm:inline">&nbsp;({count("removed")})</span></TabsTrigger>
                 <TabsTrigger value="all">All<span className="hidden sm:inline">&nbsp;({count("all")})</span></TabsTrigger>
               </TabsList>
