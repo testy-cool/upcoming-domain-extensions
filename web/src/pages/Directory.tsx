@@ -8,12 +8,20 @@ import {
   type SortingState,
   useTable,
 } from "@tanstack/react-table"
-import { ChevronDownIcon, ChevronRightIcon, SearchIcon, Settings2Icon } from "lucide-react"
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SearchIcon,
+  Settings2Icon,
+  XIcon,
+} from "lucide-react"
 
 import {
   DataGrid,
   DataGridContainer,
   dataGridFeatures,
+  useDataGrid,
   type DataGridFeatures,
 } from "@/components/reui/data-grid/data-grid"
 import { DataGridColumnVisibility } from "@/components/reui/data-grid/data-grid-column-visibility"
@@ -31,7 +39,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { GoLiveNote } from "@/components/go-live-note"
 import { StatusBadge } from "@/components/status-badge"
 import { Applications, Facts, summary } from "@/components/tld-details"
@@ -218,6 +225,40 @@ const extraColumns: ColumnDef<DataGridFeatures, Row>[] = [
   },
 ]
 
+// The pager at the top of the list: where you are and the next and previous
+// pages, without the page size, which stays with the full pager at the bottom.
+function PageSteps() {
+  const { table, recordCount, i18n } = useDataGrid()
+  const { pageIndex, pageSize } = table.state.pagination
+  const from = recordCount === 0 ? 0 : pageIndex * pageSize + 1
+  const to = Math.min((pageIndex + 1) * pageSize, recordCount)
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-muted-foreground mr-1 text-sm tabular-nums">
+        {i18n.labels.paginationInfo({ from, to, count: recordCount })}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label={i18n.labels.previousPage}
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+      >
+        <ChevronLeftIcon />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label={i18n.labels.nextPage}
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+      >
+        <ChevronRightIcon />
+      </Button>
+    </div>
+  )
+}
+
 // What opens under a row when it is clicked.
 function RowDetails({ t, back }: { t: Tld; back: string }) {
   const apps = activeApplications(t)
@@ -301,11 +342,15 @@ export function Directory() {
     for (const r of inView) n.set(r.alphabet, (n.get(r.alphabet) ?? 0) + 1)
     return [...n].sort((a, b) => b[1] - a[1])
   }, [inView])
-  // Letters with nothing under them cannot be picked.
-  const usedLetters = useMemo(
-    () => new Set(inView.filter((r) => !alphabet || r.alphabet === alphabet).map((r) => r.letter)),
-    [inView, alphabet]
-  )
+  // How many endings of this tab start with each letter. A letter with none
+  // cannot be picked.
+  const letterCounts = useMemo(() => {
+    const n = new Map<string, number>()
+    for (const r of inView)
+      if (!alphabet || r.alphabet === alphabet) n.set(r.letter, (n.get(r.letter) ?? 0) + 1)
+    return n
+  }, [inView, alphabet])
+  const filtering = Boolean(query || alphabet || letter)
 
   function update(next: { view?: View; q?: string; letter?: string; alphabet?: string }) {
     const p = new URLSearchParams(params)
@@ -442,22 +487,23 @@ export function Directory() {
         emptyMessage="Nothing matches that search."
         tableLayout={{ headerSticky: true, columnsVisibility: true }}
       >
-        <div className="w-full space-y-2.5">
-          <div className="flex flex-wrap items-center gap-3">
-            <Tabs value={view} onValueChange={(v) => update({ view: v as View })}>
-              <TabsList>
-                <TabsTrigger value="live">Live<span className="hidden sm:inline">&nbsp;({count("live")})</span></TabsTrigger>
-                <TabsTrigger value="applied">Upcoming<span className="hidden sm:inline">&nbsp;({count("applied")})</span></TabsTrigger>
-                <TabsTrigger value="removed">Removed<span className="hidden sm:inline">&nbsp;({count("removed")})</span></TabsTrigger>
-                <TabsTrigger value="all">All<span className="hidden sm:inline">&nbsp;({count("all")})</span></TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <div className="relative w-full sm:w-auto sm:min-w-64 sm:flex-1">
+        <div className="w-full space-y-3">
+          <Tabs value={view} onValueChange={(v) => update({ view: v as View })}>
+            <TabsList>
+              <TabsTrigger value="live">Live<span className="hidden sm:inline">&nbsp;({count("live")})</span></TabsTrigger>
+              <TabsTrigger value="applied">Upcoming<span className="hidden sm:inline">&nbsp;({count("applied")})</span></TabsTrigger>
+              <TabsTrigger value="removed">Removed<span className="hidden sm:inline">&nbsp;({count("removed")})</span></TabsTrigger>
+              <TabsTrigger value="all">All<span className="hidden sm:inline">&nbsp;({count("all")})</span></TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative w-full sm:w-72">
               <SearchIcon className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
               <Input
                 value={query}
                 onChange={(e) => update({ q: e.target.value })}
-                placeholder="Search a domain or a company, for example .ai or Google"
+                placeholder="Search endings or companies"
+                aria-label="Search endings or companies"
                 className="pl-8"
                 autoFocus
               />
@@ -466,11 +512,11 @@ export function Directory() {
               value={alphabet || ANY}
               onValueChange={(v) => {
                 const picked = v === ANY ? "" : v
-                // a to z only lists Latin endings, so another alphabet clears the letter.
+                // Only Latin endings start with a to z, so another alphabet clears the letter.
                 update({ alphabet: picked, ...(picked && picked !== "Latin" ? { letter: "" } : {}) })
               }}
             >
-              <SelectTrigger aria-label="Alphabet" className="w-fit min-w-44">
+              <SelectTrigger aria-label="Alphabet" className="w-fit min-w-40">
                 {/* Named here so the page sent by the server shows it too. */}
                 <SelectValue>{alphabet ? (alphabetLabel[alphabet] ?? alphabet) : "All alphabets"}</SelectValue>
               </SelectTrigger>
@@ -483,34 +529,40 @@ export function Directory() {
                 ))}
               </SelectContent>
             </Select>
-            <DataGridColumnVisibility
-              table={table}
-              trigger={
-                <Button variant="outline">
-                  <Settings2Icon />
-                  Columns
-                </Button>
-              }
-            />
+            {(!alphabet || alphabet === "Latin") && (
+              <Select value={letter || ANY} onValueChange={(v) => update({ letter: v === ANY ? "" : v })}>
+                <SelectTrigger aria-label="First letter" className="w-fit min-w-36">
+                  <SelectValue>{letter ? `Starts with ${letter.toUpperCase()}` : "Any first letter"}</SelectValue>
+                </SelectTrigger>
+                <SelectContent position="popper" align="start">
+                  <SelectItem value={ANY}>Any first letter</SelectItem>
+                  {LETTERS.map((l) => (
+                    <SelectItem key={l} value={l} disabled={!letterCounts.get(l)}>
+                      {l.toUpperCase()} ({letterCounts.get(l) ?? 0})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {filtering && (
+              <Button variant="ghost" onClick={() => update({ q: "", alphabet: "", letter: "" })}>
+                <XIcon />
+                Clear
+              </Button>
+            )}
+            <div className="ml-auto flex items-center gap-2">
+              <PageSteps />
+              <DataGridColumnVisibility
+                table={table}
+                trigger={
+                  <Button variant="outline">
+                    <Settings2Icon />
+                    Columns
+                  </Button>
+                }
+              />
+            </div>
           </div>
-          {(!alphabet || alphabet === "Latin") && (
-            <ToggleGroup
-              type="single"
-              size="sm"
-              spacing={1}
-              value={letter}
-              onValueChange={(v) => update({ letter: v })}
-              aria-label="Starts with"
-              className="flex-wrap"
-            >
-              {LETTERS.map((l) => (
-                <ToggleGroupItem key={l} value={l} disabled={!usedLetters.has(l)} className="min-w-8 uppercase">
-                  {l}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          )}
-          <DataGridPagination />
           <DataGridContainer>
             <DataGridScrollArea>
               <DataGridTable />
