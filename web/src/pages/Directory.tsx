@@ -24,6 +24,7 @@ import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { GoLiveNote } from "@/components/go-live-note"
 import { StatusBadge } from "@/components/status-badge"
 import { Applications, Facts, summary } from "@/components/tld-details"
@@ -40,6 +41,14 @@ import {
 
 type View = Status | "all"
 
+const LETTERS = "abcdefghijklmnopqrstuvwxyz".split("")
+// The letter an ending is filed under. An accent is dropped, so .québec is under Q.
+// Endings in another alphabet, such as .рф or .中国, are under none.
+const firstLetter = (name: string) => {
+  const c = name.normalize("NFD")[0]?.toLowerCase() ?? ""
+  return LETTERS.includes(c) ? c : ""
+}
+
 interface Row {
   tld: string
   name: string
@@ -49,6 +58,7 @@ interface Row {
   date: string
   dateLabel: string
   search: string
+  letter: string
   t: Tld
   kind: string
   applicants: number | null
@@ -84,6 +94,7 @@ function toRow(t: Tld): Row {
     who,
     date: date ?? "9999",
     dateLabel,
+    letter: firstLetter(isIdn ? t.display : t.tld),
     t,
     kind:
       t.status === "applied"
@@ -196,6 +207,7 @@ export function Directory() {
   const [params, setParams] = useSearchParams()
   const view = (params.get("view") as View) ?? "live"
   const query = params.get("q") ?? ""
+  const letter = params.get("letter") ?? ""
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -232,16 +244,26 @@ export function Directory() {
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase().replace(/^\./, "")
     return allRows.filter(
-      (r) => (view === "all" || r.status === view) && (!q || r.search.includes(q))
+      (r) =>
+        (view === "all" || r.status === view) &&
+        (!q || r.search.includes(q)) &&
+        (!letter || r.letter === letter)
     )
-  }, [allRows, view, query])
+  }, [allRows, view, query, letter])
+  // Letters with nothing under them in this tab cannot be picked.
+  const usedLetters = useMemo(
+    () => new Set(allRows.filter((r) => view === "all" || r.status === view).map((r) => r.letter)),
+    [allRows, view]
+  )
 
-  function update(next: { view?: View; q?: string }) {
+  function update(next: { view?: View; q?: string; letter?: string }) {
     const p = new URLSearchParams(params)
     if (next.view !== undefined) p.set("view", next.view)
-    if (next.q !== undefined) {
-      if (next.q) p.set("q", next.q)
-      else p.delete("q")
+    for (const key of ["q", "letter"] as const) {
+      const value = next[key]
+      if (value === undefined) continue
+      if (value) p.set(key, value)
+      else p.delete(key)
     }
     setParams(p, { replace: true })
     setPagination((s) => ({ ...s, pageIndex: 0 }))
@@ -399,6 +421,21 @@ export function Directory() {
               }
             />
           </div>
+          <ToggleGroup
+            type="single"
+            size="sm"
+            spacing={1}
+            value={letter}
+            onValueChange={(v) => update({ letter: v })}
+            aria-label="Starts with"
+            className="flex-wrap"
+          >
+            {LETTERS.map((l) => (
+              <ToggleGroupItem key={l} value={l} disabled={!usedLetters.has(l)} className="min-w-8 uppercase">
+                {l}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
           <DataGridPagination />
           <DataGridContainer>
             <DataGridScrollArea>
