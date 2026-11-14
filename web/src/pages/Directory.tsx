@@ -124,6 +124,27 @@ const extraColumns: ColumnDef<DataGridFeatures, Row>[] = [
     size: 150,
   },
   {
+    id: "website",
+    accessorFn: (r: Row) => r.t.website ?? "",
+    header: ({ column }) => <DataGridColumnHeader title="Registry website" column={column} />,
+    meta: { headerTitle: "Registry website" },
+    cell: ({ row }) =>
+      row.original.t.website ? (
+        <span className="line-clamp-1 break-all">{row.original.t.website.replace(/^https?:\/\//, "")}</span>
+      ) : (
+        muted("None")
+      ),
+    size: 220,
+  },
+  {
+    id: "whois",
+    accessorFn: (r: Row) => r.t.whois ?? "",
+    header: ({ column }) => <DataGridColumnHeader title="WHOIS server" column={column} />,
+    meta: { headerTitle: "WHOIS server" },
+    cell: ({ row }) => row.original.t.whois || muted("None"),
+    size: 200,
+  },
+  {
     accessorKey: "applicants",
     header: ({ column }) => <DataGridColumnHeader title="Applicants" column={column} />,
     meta: { headerTitle: "Applicants" },
@@ -144,27 +165,6 @@ const extraColumns: ColumnDef<DataGridFeatures, Row>[] = [
     meta: { headerTitle: "Contention set" },
     cell: ({ row }) => row.original.t.contention_set ?? muted("None"),
     size: 140,
-  },
-  {
-    id: "website",
-    accessorFn: (r: Row) => r.t.website ?? "",
-    header: ({ column }) => <DataGridColumnHeader title="Registry website" column={column} />,
-    meta: { headerTitle: "Registry website" },
-    cell: ({ row }) =>
-      row.original.t.website ? (
-        <span className="line-clamp-1 break-all">{row.original.t.website.replace(/^https?:\/\//, "")}</span>
-      ) : (
-        muted("None")
-      ),
-    size: 220,
-  },
-  {
-    id: "whois",
-    accessorFn: (r: Row) => r.t.whois ?? "",
-    header: ({ column }) => <DataGridColumnHeader title="WHOIS server" column={column} />,
-    meta: { headerTitle: "WHOIS server" },
-    cell: ({ row }) => row.original.t.whois || muted("None"),
-    size: 200,
   },
 ]
 
