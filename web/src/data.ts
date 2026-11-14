@@ -37,6 +37,9 @@ export interface Tld {
   iana_url: string | null
   applications: Application[]
   contention_set: number | null
+  // From IANA's list, so only on endings IANA knows. Null on the ones only applied for.
+  script?: string | null
+  script_name?: string | null
 }
 
 export interface Directory {

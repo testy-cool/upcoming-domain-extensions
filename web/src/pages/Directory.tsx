@@ -23,6 +23,13 @@ import { DataGridScrollArea } from "@/components/reui/data-grid/data-grid-scroll
 import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { GoLiveNote } from "@/components/go-live-note"
@@ -42,6 +49,36 @@ import {
 type View = Status | "all"
 
 const LETTERS = "abcdefghijklmnopqrstuvwxyz".split("")
+// IANA says which alphabet each ending it knows is written in. Endings that are
+// only applied for are worked out from their letters here.
+const DETECT: [string, RegExp][] = [
+  ["Han", /\p{Script=Han}/u],
+  ["Arabic", /\p{Script=Arabic}/u],
+  ["Cyrillic", /\p{Script=Cyrillic}/u],
+  ["Katakana", /\p{Script=Katakana}/u],
+  ["Hiragana", /\p{Script=Hiragana}/u],
+  ["Hangul", /\p{Script=Hangul}/u],
+  ["Devanagari", /\p{Script=Devanagari}/u],
+  ["Hebrew", /\p{Script=Hebrew}/u],
+  ["Greek", /\p{Script=Greek}/u],
+  ["Thai", /\p{Script=Thai}/u],
+]
+function alphabetOf(t: Tld, name: string): string {
+  if (t.script_name) return t.script_name.replace(/ \(.*\)$/, "")
+  return DETECT.find(([, re]) => re.test(name))?.[0] ?? "Latin"
+}
+// Plain names for the alphabets whose own name says little to most people.
+const alphabetLabel: Record<string, string> = {
+  Latin: "Latin (a to z)",
+  Han: "Chinese characters",
+  Katakana: "Japanese katakana",
+  Hiragana: "Japanese hiragana",
+  Hangul: "Korean",
+  Devanagari: "Devanagari (Hindi and others)",
+  Gurmukhi: "Gurmukhi (Punjabi)",
+}
+const ANY = "any"
+
 // The letter an ending is filed under. An accent is dropped, so .québec is under Q.
 // Endings in another alphabet, such as .рф or .中国, are under none.
 const firstLetter = (name: string) => {
@@ -59,6 +96,7 @@ interface Row {
   dateLabel: string
   search: string
   letter: string
+  alphabet: string
   t: Tld
   kind: string
   applicants: number | null
@@ -95,6 +133,7 @@ function toRow(t: Tld): Row {
     date: date ?? "9999",
     dateLabel,
     letter: firstLetter(isIdn ? t.display : t.tld),
+    alphabet: alphabetOf(t, isIdn ? t.display : t.tld),
     t,
     kind:
       t.status === "applied"
@@ -208,6 +247,7 @@ export function Directory() {
   const view = (params.get("view") as View) ?? "live"
   const query = params.get("q") ?? ""
   const letter = params.get("letter") ?? ""
+  const alphabet = params.get("alphabet") ?? ""
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -241,25 +281,36 @@ export function Directory() {
   ])
 
   const allRows = useMemo(() => data.tlds.map(toRow), [data])
-  const rows = useMemo(() => {
-    const q = query.trim().toLowerCase().replace(/^\./, "")
-    return allRows.filter(
-      (r) =>
-        (view === "all" || r.status === view) &&
-        (!q || r.search.includes(q)) &&
-        (!letter || r.letter === letter)
-    )
-  }, [allRows, view, query, letter])
-  // Letters with nothing under them in this tab cannot be picked.
-  const usedLetters = useMemo(
-    () => new Set(allRows.filter((r) => view === "all" || r.status === view).map((r) => r.letter)),
+  // The endings in this tab, before the search, the alphabet and the letter.
+  const inView = useMemo(
+    () => allRows.filter((r) => view === "all" || r.status === view),
     [allRows, view]
   )
+  const rows = useMemo(() => {
+    const q = query.trim().toLowerCase().replace(/^\./, "")
+    return inView.filter(
+      (r) =>
+        (!q || r.search.includes(q)) &&
+        (!alphabet || r.alphabet === alphabet) &&
+        (!letter || r.letter === letter)
+    )
+  }, [inView, query, alphabet, letter])
+  // How many endings of this tab each alphabet has, most first.
+  const alphabets = useMemo(() => {
+    const n = new Map<string, number>()
+    for (const r of inView) n.set(r.alphabet, (n.get(r.alphabet) ?? 0) + 1)
+    return [...n].sort((a, b) => b[1] - a[1])
+  }, [inView])
+  // Letters with nothing under them cannot be picked.
+  const usedLetters = useMemo(
+    () => new Set(inView.filter((r) => !alphabet || r.alphabet === alphabet).map((r) => r.letter)),
+    [inView, alphabet]
+  )
 
-  function update(next: { view?: View; q?: string; letter?: string }) {
+  function update(next: { view?: View; q?: string; letter?: string; alphabet?: string }) {
     const p = new URLSearchParams(params)
     if (next.view !== undefined) p.set("view", next.view)
-    for (const key of ["q", "letter"] as const) {
+    for (const key of ["q", "letter", "alphabet"] as const) {
       const value = next[key]
       if (value === undefined) continue
       if (value) p.set(key, value)
@@ -411,6 +462,27 @@ export function Directory() {
                 autoFocus
               />
             </div>
+            <Select
+              value={alphabet || ANY}
+              onValueChange={(v) => {
+                const picked = v === ANY ? "" : v
+                // a to z only lists Latin endings, so another alphabet clears the letter.
+                update({ alphabet: picked, ...(picked && picked !== "Latin" ? { letter: "" } : {}) })
+              }}
+            >
+              <SelectTrigger aria-label="Alphabet" className="w-fit min-w-44">
+                {/* Named here so the page sent by the server shows it too. */}
+                <SelectValue>{alphabet ? (alphabetLabel[alphabet] ?? alphabet) : "All alphabets"}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper" align="start">
+                <SelectItem value={ANY}>All alphabets</SelectItem>
+                {alphabets.map(([a, n]) => (
+                  <SelectItem key={a} value={a}>
+                    {alphabetLabel[a] ?? a} ({n})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <DataGridColumnVisibility
               table={table}
               trigger={
@@ -421,21 +493,23 @@ export function Directory() {
               }
             />
           </div>
-          <ToggleGroup
-            type="single"
-            size="sm"
-            spacing={1}
-            value={letter}
-            onValueChange={(v) => update({ letter: v })}
-            aria-label="Starts with"
-            className="flex-wrap"
-          >
-            {LETTERS.map((l) => (
-              <ToggleGroupItem key={l} value={l} disabled={!usedLetters.has(l)} className="min-w-8 uppercase">
-                {l}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+          {(!alphabet || alphabet === "Latin") && (
+            <ToggleGroup
+              type="single"
+              size="sm"
+              spacing={1}
+              value={letter}
+              onValueChange={(v) => update({ letter: v })}
+              aria-label="Starts with"
+              className="flex-wrap"
+            >
+              {LETTERS.map((l) => (
+                <ToggleGroupItem key={l} value={l} disabled={!usedLetters.has(l)} className="min-w-8 uppercase">
+                  {l}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          )}
           <DataGridPagination />
           <DataGridContainer>
             <DataGridScrollArea>
