@@ -35,6 +35,7 @@ def merge(iana: list[dict], apps: list[dict], contention: dict[str, int]) -> lis
             "status": "applied",
             "registered": None, "delegated": None, "removed": None,
             "website": None, "whois": None, "history": [], "iana_url": None,
+            "script": None, "script_name": None, "language": None,
             "applications": [],
         })
         app_id = a["applicationHumanReadableId"]
