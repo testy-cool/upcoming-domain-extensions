@@ -72,7 +72,10 @@ const DETECT: [string, RegExp][] = [
 ]
 function alphabetOf(t: Tld, name: string): string {
   if (t.script_name) return t.script_name.replace(/ \(.*\)$/, "")
-  return DETECT.find(([, re]) => re.test(name))?.[0] ?? "Latin"
+  const found = DETECT.find(([, re]) => re.test(name))?.[0]
+  if (found) return found
+  // Plain a to z, digits and hyphens are Latin; any other letters are not.
+  return /^[\p{Script=Latin}\p{N}-]+$/u.test(name) ? "Latin" : "Other"
 }
 // Plain names for the alphabets whose own name says little to most people.
 const alphabetLabel: Record<string, string> = {
