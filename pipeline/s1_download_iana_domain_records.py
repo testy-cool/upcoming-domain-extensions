@@ -130,6 +130,13 @@ async def fetch_detail(client, sem, raw: Path, slug: str, force: bool) -> tuple[
     return r.text, True
 
 
+def list_row_changed(before: dict | None, row: dict) -> bool:
+    """Whether a record's row in IANA's list changed since the last run, so its page must be
+    downloaded again. Only the fields the earlier snapshot has are compared: a field added to
+    the snapshot is not a change to every row."""
+    return before is None or any(before[k] != row.get(k) for k in before)
+
+
 # The fields of an IANA entry in iana.json, which s3 merges with the applications.
 IANA_FIELDS = ("tld", "display", "type", "manager", "status", "registered", "delegated", "removed",
                "website", "whois", "script", "script_name", "language", "history", "iana_url")
@@ -167,7 +174,8 @@ async def collect(data: Path) -> dict:
         previous = {r["slug"]: r for r in json.loads(snapshot.read_text())} if snapshot.exists() else {}
         sem = asyncio.Semaphore(6)
         pages = await asyncio.gather(*[
-            fetch_detail(client, sem, raw, r["slug"], force=previous.get(r["slug"]) != r) for r in rows
+            fetch_detail(client, sem, raw, r["slug"], force=list_row_changed(previous.get(r["slug"]), r))
+            for r in rows
         ])
     snapshot.write_text(json.dumps(rows, ensure_ascii=False, indent=1))
     earlier = earlier_facts(data)
