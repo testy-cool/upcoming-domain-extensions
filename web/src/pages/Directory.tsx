@@ -399,6 +399,7 @@ export function Directory() {
               }
             />
           </div>
+          <DataGridPagination />
           <DataGridContainer>
             <DataGridScrollArea>
               <DataGridTable />
