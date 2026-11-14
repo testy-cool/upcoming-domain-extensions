@@ -173,11 +173,19 @@ async def collect(data: Path) -> dict:
         snapshot = data / "iana-list.json"
         previous = {r["slug"]: r for r in json.loads(snapshot.read_text())} if snapshot.exists() else {}
         sem = asyncio.Semaphore(6)
-        pages = await asyncio.gather(*[
+        results = await asyncio.gather(*[
             fetch_detail(client, sem, raw, r["slug"], force=list_row_changed(previous.get(r["slug"]), r))
             for r in rows
-        ])
-    snapshot.write_text(json.dumps(rows, ensure_ascii=False, indent=1))
+        ], return_exceptions=True)
+    # Save the row of every page that did download, even when others failed, so a
+    # retry reuses those pages. A failed row keeps its earlier entry, or none.
+    done = [row if not isinstance(res, BaseException) else previous.get(row["slug"])
+            for row, res in zip(rows, results)]
+    snapshot.write_text(json.dumps([r for r in done if r], ensure_ascii=False, indent=1))
+    failed = [res for res in results if isinstance(res, BaseException)]
+    if failed:
+        raise failed[0]
+    pages = results
     earlier = earlier_facts(data)
     out = []
     for row, (detail_page, _) in zip(rows, pages):
