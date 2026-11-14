@@ -322,9 +322,10 @@ export function Directory() {
     })
   }
   // Newest first: the latest to go live, or to be removed, at the top. Upcoming
-  // ones have no date yet and keep their a to z order.
+  // ones have no date yet, so the name as shown, a to z, breaks the tie.
   const [sorting, setSorting] = useState<SortingState>([
     { id: "status", desc: true },
+    { id: "name", desc: false },
   ])
 
   const allRows = useMemo(() => data.tlds.map(toRow), [data])
