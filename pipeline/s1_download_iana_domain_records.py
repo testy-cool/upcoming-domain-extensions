@@ -13,6 +13,7 @@ import asyncio
 import html
 import json
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -129,6 +130,26 @@ async def fetch_detail(client, sem, raw: Path, slug: str, force: bool) -> tuple[
     return r.text, True
 
 
+# The fields of an IANA entry in iana.json, which s3 merges with the applications.
+IANA_FIELDS = ("tld", "display", "type", "manager", "status", "registered", "delegated", "removed",
+               "website", "whois", "script", "script_name", "language", "history", "iana_url")
+
+
+def kept_removed_records(earlier: dict[str, dict], listed: set[str]) -> list[dict]:
+    """Removed endings that IANA has since dropped from its list altogether, such as .emerson.
+    They stay in the directory as published, without the link to their old IANA page, which
+    is gone. A live ending missing from the list is only reported, never kept."""
+    kept = []
+    for slug, t in earlier.items():
+        if slug in listed or t.get("status") not in ("live", "removed"):
+            continue
+        if t["status"] == "live":
+            print(f"warning: live ending .{slug} is missing from IANA's list", file=sys.stderr)
+            continue
+        kept.append({**{k: t.get(k) for k in IANA_FIELDS}, "iana_url": None})
+    return kept
+
+
 def earlier_facts(data: Path) -> dict[str, dict]:
     """Facts the old pages gave and the new ones do not, read from the last published file."""
     path = data / "tlds.json"
@@ -181,6 +202,7 @@ async def collect(data: Path) -> dict:
             "history": detail["reports"],
             "iana_url": f"{IANA_DB}/{row['slug']}",
         })
+    out += kept_removed_records(earlier, {row["slug"] for row in rows})
     (data / "iana.json").write_text(json.dumps(out, ensure_ascii=False))
     return {
         "domains": len(out),
