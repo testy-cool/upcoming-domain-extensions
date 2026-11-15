@@ -41,7 +41,7 @@ function Layout() {
           <Nav to="/how-it-works/">How applying works</Nav>
           <Nav to="/alerts/">Alerts</Nav>
         </nav>
-        <span className="text-muted-foreground">Updated {formatUpdated(data.collected_at)}. Checks ICANN and IANA every morning.</span>
+        <span className="text-muted-foreground">Updated {formatUpdated(data.collected_at)}. Checks ICANN and IANA once a day.</span>
       </header>
       <main>
         <Outlet />
