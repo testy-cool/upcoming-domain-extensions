@@ -1,5 +1,5 @@
 {
- "collected_at": "2026-11-18T15:17:26+00:00",
+ "collected_at": "2026-11-19T15:24:59+00:00",
  "counts": {
   "live": 1436,
   "applied": 975,
@@ -51772,7 +51772,7 @@
      "region": "AP",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/BGNT2696T-T98747"
     },
