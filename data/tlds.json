@@ -1,9 +1,9 @@
 {
- "collected_at": "2026-11-20T15:01:53+00:00",
+ "collected_at": "2026-11-21T14:23:16+00:00",
  "counts": {
-  "live": 1436,
+  "live": 1435,
   "applied": 975,
-  "removed": 161
+  "removed": 162
  },
  "tlds": [
   {
@@ -2475,7 +2475,7 @@
       "Brand"
      ],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/AI2686T-T93348"
     }
@@ -37902,7 +37902,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/TL2645T-T79897"
     }
@@ -73408,13 +73408,13 @@
    "tld": "xihuan",
    "display": "xihuan",
    "type": "generic",
-   "manager": "Beijing Qihu Keji Co., Ltd.",
-   "status": "live",
+   "manager": null,
+   "status": "removed",
    "registered": "2016-03-18",
    "delegated": "2016-03-25",
-   "removed": null,
-   "website": "http://www.teleinfo.cn",
-   "whois": "whois.teleinfo.cn",
+   "removed": "2026-11-20",
+   "website": null,
+   "whois": null,
    "script": "Latn",
    "script_name": "Latin",
    "language": "en",
@@ -79470,7 +79470,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/TL2645T-T30242"
     },
