@@ -1,5 +1,5 @@
 {
- "collected_at": "2026-11-23T17:37:42+00:00",
+ "collected_at": "2026-11-24T17:08:37+00:00",
  "counts": {
   "live": 1435,
   "applied": 975,
@@ -59059,7 +59059,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NTG2671T-T12150"
     },
@@ -68345,7 +68345,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NTG2671T-T13787"
     },
