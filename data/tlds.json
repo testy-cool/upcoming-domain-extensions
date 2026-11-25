@@ -1,5 +1,5 @@
 {
- "collected_at": "2026-11-24T17:08:37+00:00",
+ "collected_at": "2026-11-25T16:55:50+00:00",
  "counts": {
   "live": 1435,
   "applied": 975,
@@ -13904,6 +13904,11 @@
      "title": "Transfer of the .click domain to Internet Naming Co.",
      "date": "2022-11-16",
      "url": "https://www.iana.org/reports/tld-transfer/20221116-click"
+    },
+    {
+     "title": "Transfer of the .click domain to Waterford Limited",
+     "date": "2026-11-16",
+     "url": "https://www.iana.org/reports/tld-transfer/20261116-click"
     }
    ],
    "iana_url": "https://www.iana.org/domains/root/db/click",
@@ -54515,6 +54520,11 @@
      "title": "Transfer of the .realty domain to Internet Naming Co.",
      "date": "2024-02-23",
      "url": "https://www.iana.org/reports/tld-transfer/20240223-realty"
+    },
+    {
+     "title": "Transfer of the .realty domain to",
+     "date": "2026-11-16",
+     "url": "https://www.iana.org/reports/tld-transfer/20261116-realty"
     }
    ],
    "iana_url": "https://www.iana.org/domains/root/db/realty",
