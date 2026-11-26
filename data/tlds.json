@@ -1,5 +1,5 @@
 {
- "collected_at": "2026-11-25T16:55:50+00:00",
+ "collected_at": "2026-11-26T16:33:49+00:00",
  "counts": {
   "live": 1435,
   "applied": 975,
@@ -556,7 +556,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T30508"
     },
@@ -1678,7 +1678,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/EDCL2689T-T94739"
     },
@@ -1938,7 +1938,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T14670"
     },
@@ -3950,7 +3950,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/EDCL2689T-T68091"
     },
@@ -4005,7 +4005,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T46346"
     },
@@ -4686,7 +4686,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/AEI2688T-T84808"
     },
@@ -4830,7 +4830,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T63059"
     },
@@ -5534,7 +5534,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/CS2676T-T34770"
     },
@@ -16188,7 +16188,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/BEI2691T-T99138"
     },
@@ -16757,7 +16757,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/EDCL2689T-T11150"
     },
@@ -22322,7 +22322,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T70103"
     },
@@ -23964,7 +23964,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T48225"
     },
@@ -28071,7 +28071,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T32387"
     },
@@ -31440,7 +31440,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/HU2684T-T32145"
     },
@@ -31473,7 +31473,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T65696"
     },
@@ -33262,7 +33262,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/FEI2676T-T60926"
     },
@@ -35895,7 +35895,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/GEI2639T-T18440"
     },
@@ -36628,7 +36628,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T54761"
     },
@@ -40719,7 +40719,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/MEI2627T-T58035"
     },
@@ -41297,7 +41297,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/MEI2627T-T73873"
     },
@@ -41881,7 +41881,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T80159"
     },
@@ -48314,7 +48314,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T38427"
     },
@@ -50001,7 +50001,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/PEI2617T-T23468"
     },
@@ -51810,7 +51810,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T90969"
     },
@@ -64432,7 +64432,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T64063"
     },
@@ -69975,7 +69975,7 @@
      "region": "NA",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/REI2641T-T20577"
     },
@@ -79436,7 +79436,7 @@
      "region": "EUR",
      "kinds": [],
      "stage": "String Evaluation Processing",
-     "status": "Active",
+     "status": "Withdrawn",
      "backup_string": null,
      "url": "https://newgtldprogram-aps.icann.org/applications/NA2626T-T98888"
     },
